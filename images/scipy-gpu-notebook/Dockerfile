@@ -23,6 +23,11 @@ RUN apt-get update --yes && \
     ffmpeg && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+ENV JULIA_DEPOT_PATH=/opt/julia \
+    JULIA_PKGDIR=/opt/julia
+
+RUN /opt/setup-scripts/setup-julia.bash
+
 USER ${NB_UID}
 
 # mamba downgrades these packages to previous major versions, which causes issues
@@ -62,12 +67,13 @@ RUN mamba install --yes \
     'widgetsnbextension'\
     'xlrd' && \
     mamba clean --all -f -y && \
+    pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
 
 # Install facets which does not have a pip or conda package at the moment
 WORKDIR /tmp
-RUN git clone https://github.com/PAIR-code/facets && \
+RUN git clone https://github.com/PAIR-code/facets.git && \
     jupyter nbclassic-extension install facets/facets-dist/ --sys-prefix && \
     rm -rf /tmp/facets && \
     fix-permissions "${CONDA_DIR}" && \
