@@ -23,6 +23,15 @@ RUN apt-get update --yes && \
     ffmpeg && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+ENV JULIA_DEPOT_PATH=/opt/julia \
+    JULIA_PKGDIR=/opt/julia
+
+RUN /opt/setup-scripts/setup-julia.bash
+
+RUN curl -fOL https://github.com/coder/code-server/releases/download/v4.16.1/code-server_4.16.1_amd64.deb && \
+    dpkg -i code-server_4.16.1_amd64.deb && \
+    rm -f code-server_4.16.1_amd64.deb
+
 USER ${NB_UID}
 
 # mamba downgrades these packages to previous major versions, which causes issues
@@ -60,8 +69,13 @@ RUN mamba install --yes \
     'statsmodels' \
     'sympy' \
     'widgetsnbextension'\
-    'xlrd' && \
+    'xlrd' \
+    'cvxpy' \
+    'tensorflow' \
+    'keras' \
+    'cupy' && \
     mamba clean --all -f -y && \
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
 
