@@ -1,10 +1,10 @@
-# Copyright (c) Jupyter Development Team.
+# Copyright (c) Jupyter Development Team. WhiteCat6142 <whitecat6142+git@gmail.com>
 # Distributed under the terms of the Modified BSD License.
 ARG OWNER=jupyter
-ARG BASE_CONTAINER=$OWNER/minimal-notebook
+ARG BASE_CONTAINER=minimal-notebook
 FROM $BASE_CONTAINER
 
-LABEL maintainer="Jupyter Project <jupyter@googlegroups.com>"
+LABEL maintainer="WhiteCat6142 <whitecat6142+git@gmail.com>"
 
 # Fix: https://github.com/hadolint/hadolint/wiki/DL4006
 # Fix: https://github.com/koalaman/shellcheck/wiki/SC3014
@@ -16,12 +16,20 @@ RUN apt-get update --yes && \
     apt-get install --yes --no-install-recommends \
     # for cython: https://cython.readthedocs.io/en/latest/src/quickstart/install.html
     build-essential \
+    #for kubernetes plugins
+    apt-transport-https gnupg2 \
     # for latex labels
     cm-super \
     dvipng \
     # for matplotlib anim
     ffmpeg && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# https://discourse.jupyter.org/t/how-to-configure-jupyterhub-to-run-code-server/11578/9
+ENV CODE_VERSION=4.16.1
+RUN curl -fOL https://github.com/coder/code-server/releases/download/v$CODE_VERSION/code-server_${CODE_VERSION}_amd64.deb \
+    && dpkg -i code-server_${CODE_VERSION}_amd64.deb \
+    && rm -f code-server_${CODE_VERSION}_amd64.deb
 
 USER ${NB_UID}
 
@@ -60,10 +68,17 @@ RUN mamba install --yes \
     'statsmodels' \
     'sympy' \
     'widgetsnbextension'\
-    'xlrd' && \
+    'xlrd' \
+    'cvxpy' \
+    'tensorflow' \
+    'keras' \
+    'cupy' \
+    'jupyter-server-proxy' \
+    'jupyter-vscode-proxy' && \
     mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
+
 
 # Install facets which does not have a pip or conda package at the moment
 WORKDIR /tmp
