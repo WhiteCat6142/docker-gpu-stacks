@@ -20,6 +20,14 @@ RUN apt-get update --yes && \
     gcc && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# https://qiita.com/hiroki_okuhata_int/items/73b1c866f146a0d639e6
+# https://kubernetes.io/ja/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+RUN curl -sL https://dl.k8s.io/apt/doc/apt-key.gpg | apt-key add - && \
+    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >> /etc/apt/sources.list.d/kubernetes.list && \
+    apt-get update && apt-get install -y kubectl && \
+    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Julia dependencies
 # install Julia packages in /opt/julia instead of ${HOME}
 ENV JULIA_DEPOT_PATH=/opt/julia \

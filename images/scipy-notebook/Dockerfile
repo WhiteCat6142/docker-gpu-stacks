@@ -16,7 +16,7 @@ RUN apt-get update --yes && \
     apt-get install --yes --no-install-recommends \
     # for cython: https://cython.readthedocs.io/en/latest/src/quickstart/install.html
     build-essential \
-    #for kubernetes plugins
+    # for kubernetes plugins
     apt-transport-https gnupg2 \
     # for latex labels
     cm-super \
@@ -70,6 +70,11 @@ RUN mamba install --yes \
     'widgetsnbextension'\
     'xlrd' \
     'cvxpy' \
+    'cvxopt' \
+    'sdpa-python' \
+    'scikit-glpk' \
+    'dccp' \
+    'pyomo' \
     'tensorflow' \
     'keras' \
     'cupy' \
