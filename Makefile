@@ -4,8 +4,7 @@
 
 # Use bash for inline if-statements in arch_patch target
 SHELL:=bash
-REGISTRY?=quay.io
-OWNER?=jupyter
+OWNER?=localhost:32000
 
 # Need to list the images in build dependency order
 # All of the images
@@ -13,14 +12,14 @@ ALL_IMAGES:= \
 	docker-stacks-foundation \
 	base-notebook \
 	minimal-notebook \
-	r-notebook \
-	julia-notebook \
+#	r-notebook \
+#	julia-notebook \
 	scipy-notebook \
-	tensorflow-notebook \
-	pytorch-notebook \
 	datascience-notebook \
-	pyspark-notebook \
-	all-spark-notebook
+	datascience-gpu-notebook \
+	datascience-cpu-notebook
+#	pyspark-notebook \
+#	all-spark-notebook
 
 # Enable BuildKit for Docker build
 export DOCKER_BUILDKIT:=1
@@ -39,9 +38,9 @@ help:
 
 build/%: DOCKER_BUILD_ARGS?=
 build/%: ## build the latest image for a stack using the system's architecture
-	docker build $(DOCKER_BUILD_ARGS) --rm --force-rm --tag "$(REGISTRY)/$(OWNER)/$(notdir $@):latest" "./images/$(notdir $@)" --build-arg REGISTRY="$(REGISTRY)" --build-arg OWNER="$(OWNER)"
+	docker build $(DOCKER_BUILD_ARGS) -t "$(OWNER)/$(notdir $@):latest" "./images/$(notdir $@)"
 	@echo -n "Built image size: "
-	@docker images "$(REGISTRY)/$(OWNER)/$(notdir $@):latest" --format "{{.Size}}"
+	@docker images "$(OWNER)/$(notdir $@):latest" --format "{{.Size}}"
 build-all: $(foreach I, $(ALL_IMAGES), build/$(I)) ## build all stacks
 
 
