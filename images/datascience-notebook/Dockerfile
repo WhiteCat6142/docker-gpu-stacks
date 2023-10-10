@@ -68,3 +68,29 @@ RUN mamba install --yes \
     mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
+
+USER root
+
+RUN apt-get update -y && \
+    apt-get install -y \
+    texlive-lang-japanese texlive-lang-cjk texlive-fonts-recommended texlive-fonts-extra fonts-takao fonts-noto-cjk-extra \
+    ghostscript gv xzdec texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science texlive-extra-utils texlive-bibtex-extra && \
+    tlmgr update --self && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
+USER ${NB_UID}
+
+RUN RUN code-server \
+    --install-extension ms-ceintl.vscode-language-pack-ja \
+    --install-extension ms-python.python \
+    --install-extension ms-toolsai.jupyter \
+    --install-extension James-Yu.latex-workshop \
+    --install-extension streetsidesoftware.code-spell-checker \
+    --install-extension oderwat.indent-rainbow
+RUN tlmgr init-usertree --usermode && \
+    tlmgr install --usermode eulervm doublestroke jknapltx ntheorem inputenc amsthm assymb mathtools optidef xr docmute enumerate bm subfig && \
+    fmtutil-user --byfmt uplatex && \
+    updmap-user nofont --syncwithtrees && \
+    kanji-config-updmap-user ipaex && \
+    mktexlsr

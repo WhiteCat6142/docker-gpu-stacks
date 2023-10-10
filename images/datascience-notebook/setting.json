@@ -1,0 +1,30 @@
+{
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "latexmk",
+            "tools": [
+                "latexmk"
+            ]
+        },
+    ],
+    "latex-workshop.latex.tools": [
+        {
+            "name": "latexmk",
+            "command": "latexmk",
+            "args": [
+                "-synctex=1",
+                "-pdfdvi",
+                "-interaction=nonstopmode",
+                "%DOC%",
+            ],
+        },
+    ],
+    "cSpell.userWords": [],
+    "[latex]": {
+        "cSpell.showAutocompleteSuggestions": true
+    },
+    "latex-workshop.intellisense.citation.backend": "biblatex",
+    "latex-workshop.latex.autoClean.run": "onBuilt",
+    "latex-workshop.view.pdf.internal.synctex.keybinding": "double-click",
+    "latex-workshop.bind.altKeymap.enabled": false
+}
