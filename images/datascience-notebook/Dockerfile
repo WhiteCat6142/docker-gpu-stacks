@@ -75,22 +75,29 @@ RUN apt-get update -y && \
     apt-get install -y \
     texlive-lang-japanese texlive-lang-cjk texlive-fonts-recommended texlive-fonts-extra fonts-takao fonts-noto-cjk-extra \
     ghostscript gv xzdec texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science texlive-extra-utils texlive-bibtex-extra && \
-    tlmgr update --self && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN curl -fsSL https://www.preining.info/rsa.asc | tlmgr key add -
 
 USER ${NB_UID}
 
-RUN RUN code-server \
+RUN code-server \
     --install-extension ms-ceintl.vscode-language-pack-ja \
     --install-extension ms-python.python \
     --install-extension ms-toolsai.jupyter \
     --install-extension James-Yu.latex-workshop \
     --install-extension streetsidesoftware.code-spell-checker \
     --install-extension oderwat.indent-rainbow
-RUN tlmgr init-usertree --usermode && \
-    tlmgr install --usermode eulervm doublestroke jknapltx ntheorem inputenc amsthm assymb mathtools optidef xr docmute enumerate bm subfig && \
-    fmtutil-user --byfmt uplatex && \
+
+# RUN wget https://mirror.ctan.org/systems/texlive/tlnet/update-tlmgr-latest.sh && \
+#    chmod +x update-tlmgr-latest.sh && \
+RUN fmtutil-user --byfmt uplatex && \
     updmap-user nofont --syncwithtrees && \
     kanji-config-updmap-user ipaex && \
     mktexlsr
+#    tlmgr init-usertree --usermode && \
+#    tlmgr repository add ftp://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2019/tlnet-final && \
+#    tlmgr repository remove http://mirror.ctan.org/systems/texlive/tlnet && \
+#    tlmgr option repository ftp://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2019/tlnet-final && \
+#    tlmgr install --verify-repo=none --usermode ntheorem inputenc amsthm assymb optidef xr docmute enumerate bm
+
