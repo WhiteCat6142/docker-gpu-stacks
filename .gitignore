@@ -173,3 +173,5 @@ cython_debug/
 
 # PyCharm project configuration
 .idea/
+ 
+nohup.out

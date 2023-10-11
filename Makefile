@@ -12,12 +12,13 @@ ALL_IMAGES:= \
 	docker-stacks-foundation \
 	base-notebook \
 	minimal-notebook \
-#	r-notebook \
-#	julia-notebook \
 	scipy-notebook \
 	datascience-notebook \
 	datascience-gpu-notebook \
 	datascience-cpu-notebook
+#	r-notebook \
+#	julia-notebook \
+#	tensorflow-notebook \
 #	pyspark-notebook \
 #	all-spark-notebook
 
@@ -40,7 +41,7 @@ build/%: DOCKER_BUILD_ARGS?=
 build/%: ## build the latest image for a stack using the system's architecture
 	docker build $(DOCKER_BUILD_ARGS) -t "$(OWNER)/$(notdir $@):latest" "./images/$(notdir $@)"
 	@echo -n "Built image size: "
-	@docker images "$(OWNER)/$(notdir $@):latest" --format "{{.Size}}"
+	@docker images "$(notdir $@):latest" --format "{{.Size}}"
 build-all: $(foreach I, $(ALL_IMAGES), build/$(I)) ## build all stacks
 
 

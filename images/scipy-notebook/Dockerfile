@@ -70,9 +70,6 @@ RUN mamba install --yes \
     'xlrd' \
     'cvxpy' \
     'cvxopt' \
-    'sdpa-python' \
-    'scikit-glpk' \
-    'dccp' \
     'pyomo' \
     'tensorflow' \
     'keras' \
@@ -82,6 +79,9 @@ RUN mamba install --yes \
     mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
+#    'dccp' \
+#    'scikit-glpk' \
+#    'sdpa-python' \
 
 # Install facets package which does not have a `pip` or `conda-forge` package at the moment
 WORKDIR /tmp
