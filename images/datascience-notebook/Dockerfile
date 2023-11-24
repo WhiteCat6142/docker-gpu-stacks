@@ -76,7 +76,17 @@ RUN apt-get update -y && \
     ghostscript gv xzdec texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science texlive-extra-utils texlive-bibtex-extra && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update -y && \
+    apt-get install -y latexmk biber&& \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
 RUN curl -fsSL https://www.preining.info/rsa.asc | tlmgr key add -
+
+# https://discourse.jupyter.org/t/how-to-configure-jupyterhub-to-run-code-server/11578/9
+ENV CODE_VERSION2=4.18.0
+RUN curl -fOL https://github.com/coder/code-server/releases/download/v${CODE_VERSION2}/code-server_${CODE_VERSION2}_amd64.deb \
+    && dpkg -i code-server_${CODE_VERSION2}_amd64.deb \
+    && rm -f code-server_${CODE_VERSION2}_amd64.deb
 
 USER ${NB_UID}
 
@@ -86,7 +96,8 @@ RUN code-server \
     --install-extension ms-toolsai.jupyter \
     --install-extension James-Yu.latex-workshop \
     --install-extension streetsidesoftware.code-spell-checker \
-    --install-extension oderwat.indent-rainbow
+    --install-extension oderwat.indent-rainbow && \
+    fix-permissions "/home/${NB_USER}"
 
 # RUN wget https://mirror.ctan.org/systems/texlive/tlnet/update-tlmgr-latest.sh && \
 #    chmod +x update-tlmgr-latest.sh && \
