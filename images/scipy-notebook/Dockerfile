@@ -11,7 +11,10 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 USER root
 
-RUN apt-get update --yes && \
+RUN --mount=type=cache,target=/var/lib/apt/lists \
+    --mount=type=cache,target=/var/cache/apt \
+    rm /etc/apt/apt.conf.d/docker-clean && \
+    apt-get update --yes && \
     apt-get install --yes --no-install-recommends \
     # for cython: https://cython.readthedocs.io/en/latest/src/quickstart/install.html
     build-essential \
@@ -21,14 +24,7 @@ RUN apt-get update --yes && \
     cm-super \
     dvipng \
     # for matplotlib anim
-    ffmpeg && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# https://discourse.jupyter.org/t/how-to-configure-jupyterhub-to-run-code-server/11578/9
-ENV CODE_VERSION=4.16.1
-RUN curl -fOL https://github.com/coder/code-server/releases/download/v$CODE_VERSION/code-server_${CODE_VERSION}_amd64.deb \
-    && dpkg -i code-server_${CODE_VERSION}_amd64.deb \
-    && rm -f code-server_${CODE_VERSION}_amd64.deb
+    ffmpeg
 
 USER ${NB_UID}
 

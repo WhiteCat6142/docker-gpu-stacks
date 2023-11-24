@@ -3,7 +3,7 @@
 ARG BASE_CONTAINER=scipy-notebook
 FROM $BASE_CONTAINER
 
-LABEL maintainer="Jupyter Project <jupyter@googlegroups.com>"
+LABEL maintainer="WhiteCat6142 <whitecat6142+git@gmail.com>"
 
 # Fix: https://github.com/hadolint/hadolint/wiki/DL4006
 # Fix: https://github.com/koalaman/shellcheck/wiki/SC3014
@@ -12,21 +12,22 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 USER root
 
 # R pre-requisites
-RUN apt-get update --yes && \
+RUN --mount=type=cache,target=/var/lib/apt/lists \
+    --mount=type=cache,target=/var/cache/apt \
+    apt-get update --yes && \
     apt-get install --yes --no-install-recommends \
     fonts-dejavu \
     gfortran \
-    gcc && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    gcc
 
 # https://qiita.com/hiroki_okuhata_int/items/73b1c866f146a0d639e6
 # https://kubernetes.io/ja/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
-RUN curl -sL https://dl.k8s.io/apt/doc/apt-key.gpg | apt-key add - && \
+RUN --mount=type=cache,target=/var/lib/apt/lists \
+    --mount=type=cache,target=/var/cache/apt \
+    curl -sL https://dl.k8s.io/apt/doc/apt-key.gpg | apt-key add - && \
     echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >> /etc/apt/sources.list.d/kubernetes.list && \
     apt-get update && apt-get install -y kubectl && \
-    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
+    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 # Julia dependencies
 # install Julia packages in /opt/julia instead of ${HOME}
 ENV JULIA_DEPOT_PATH=/opt/julia \
@@ -70,20 +71,16 @@ RUN mamba install --yes \
 
 USER root
 
-RUN apt-get update -y && \
+RUN --mount=type=cache,target=/var/lib/apt/lists \
+    --mount=type=cache,target=/var/cache/apt \
+    apt-get update -y && \
     apt-get install -y \
     texlive-lang-japanese texlive-lang-cjk texlive-fonts-recommended texlive-fonts-extra fonts-takao fonts-noto-cjk-extra \
-    ghostscript gv xzdec texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science texlive-extra-utils texlive-bibtex-extra && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update -y && \
-    apt-get install -y latexmk biber&& \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-RUN curl -fsSL https://www.preining.info/rsa.asc | tlmgr key add -
+    ghostscript gv xzdec texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science texlive-extra-utils texlive-bibtex-extra \
+    latexmk biber
 
 # https://discourse.jupyter.org/t/how-to-configure-jupyterhub-to-run-code-server/11578/9
-ENV CODE_VERSION2=4.18.0
+ENV CODE_VERSION2=4.19.0
 RUN curl -fOL https://github.com/coder/code-server/releases/download/v${CODE_VERSION2}/code-server_${CODE_VERSION2}_amd64.deb \
     && dpkg -i code-server_${CODE_VERSION2}_amd64.deb \
     && rm -f code-server_${CODE_VERSION2}_amd64.deb
