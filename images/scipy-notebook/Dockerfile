@@ -28,10 +28,6 @@ RUN --mount=type=cache,target=/var/lib/apt/lists \
 
 USER ${NB_UID}
 
-# mamba downgrades these packages to previous major versions, which causes issues
-RUN echo 'jupyterlab >=4.0.4' >> "${CONDA_DIR}/conda-meta/pinned" && \
-    echo 'notebook >=7.0.2' >> "${CONDA_DIR}/conda-meta/pinned"
-
 # Install Python 3 packages
 RUN mamba install --yes \
     'altair' \

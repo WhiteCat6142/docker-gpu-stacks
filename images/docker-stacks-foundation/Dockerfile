@@ -22,8 +22,8 @@ USER root
 # but lacks all features (e.g., download as all possible file formats)
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update --yes && \
-    # - `apt-get upgrade` is run to patch known vulnerabilities in apt-get packages as
-    #   the Ubuntu base image is rebuilt too seldom sometimes (less than once a month)
+    # - `apt-get upgrade` is run to patch known vulnerabilities in system packages
+    #   as the Ubuntu base image is rebuilt too seldom sometimes (less than once a month)
     apt-get upgrade --yes && \
     apt-get install --yes --no-install-recommends \
     # - bzip2 is necessary to extract the micromamba executable.
@@ -31,9 +31,9 @@ RUN apt-get update --yes && \
     ca-certificates \
     locales \
     sudo \
-    # - tini is installed as a helpful container entrypoint that reaps zombie
-    #   processes and such of the actual executable we want to start, see
-    #   https://github.com/krallin/tini#why-tini for details.
+    # - `tini` is installed as a helpful container entrypoint,
+    #   that reaps zombie processes and such of the actual executable we want to start
+    #   See https://github.com/krallin/tini#why-tini for details
     tini \
     wget && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
@@ -102,37 +102,32 @@ RUN set -x && \
         # Should be simpler, see <https://github.com/mamba-org/mamba/issues/1437>
         arch="64"; \
     fi && \
-    wget --progress=dot:giga -O /tmp/micromamba.tar.bz2 \
-        "https://micromamba.snakepit.net/api/micromamba/linux-${arch}/latest" && \
-    tar -xvjf /tmp/micromamba.tar.bz2 --strip-components=1 bin/micromamba && \
-    rm /tmp/micromamba.tar.bz2 && \
+    # https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html#linux-and-macos
+    wget --progress=dot:giga -O - \
+        "https://micro.mamba.pm/api/micromamba/linux-${arch}/latest" | tar -xvj bin/micromamba && \
     PYTHON_SPECIFIER="python=${PYTHON_VERSION}" && \
     if [[ "${PYTHON_VERSION}" == "default" ]]; then PYTHON_SPECIFIER="python"; fi && \
     # Install the packages
-    ./micromamba install \
+    ./bin/micromamba install \
         --root-prefix="${CONDA_DIR}" \
         --prefix="${CONDA_DIR}" \
         --yes \
         "${PYTHON_SPECIFIER}" \
         'mamba' \
         'jupyter_core' && \
-    rm micromamba && \
-    # Temporary fix till mamba 1.5.5 is released
-    # Download mamba.py after merged fix for `mamba clean`: https://github.com/mamba-org/mamba/pull/3040
-    wget --progress=dot:giga https://raw.githubusercontent.com/mamba-org/mamba/cf9c063479c7bd32f1e6e8adfd04a1e15ba12981/mamba/mamba/mamba.py \
-        -O /opt/conda/lib/python3.11/site-packages/mamba/mamba.py && \
+    rm -rf /tmp/bin/ && \
     # Pin major.minor version of python
-    mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
+    # https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-pkgs.html#preventing-packages-from-updating-pinning
+    mamba list --full-name 'python' | tail -1 | tr -s ' ' | cut -d ' ' -f 1,2 | sed 's/\.[^.]*$/.*/' >> "${CONDA_DIR}/conda-meta/pinned" && \
     mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
 
-# Configure container startup
-ENTRYPOINT ["tini", "-g", "--"]
-CMD ["start.sh"]
-
 # Copy local files as late as possible to avoid cache busting
 COPY run-hooks.sh start.sh /usr/local/bin/
+
+# Configure container entrypoint
+ENTRYPOINT ["tini", "-g", "--", "start.sh"]
 
 USER root
 

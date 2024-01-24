@@ -35,7 +35,7 @@ def test_nb_user_change(container: TrackedContainer) -> None:
         tty=True,
         user="root",
         environment=[f"NB_USER={nb_user}", "CHOWN_HOME=yes"],
-        command=["start.sh", "bash", "-c", "sleep infinity"],
+        command=["bash", "-c", "sleep infinity"],
     )
 
     # Give the chown time to complete.
@@ -65,10 +65,10 @@ def test_unsigned_ssl(
         environment=["GEN_CERT=yes"],
         ports={"8888/tcp": host_port},
     )
-    # NOTE: The requests.Session backing the http_client fixture does not retry
-    # properly while the server is booting up. An SSL handshake error seems to
-    # abort the retry logic. Forcing a long sleep for the moment until I have
-    # time to dig more.
+    # NOTE: The requests.Session backing the http_client fixture
+    # does not retry properly while the server is booting up.
+    # An SSL handshake error seems to abort the retry logic.
+    # Forcing a long sleep for the moment until I have time to dig more.
     time.sleep(1)
     resp = http_client.get(f"https://localhost:{host_port}", verify=False)
     resp.raise_for_status()

@@ -34,8 +34,7 @@ It contains:
   - [mamba](https://github.com/mamba-org/mamba): "reimplementation of the conda package manager in C++". We use this package manager by default when installing packages.
 - Unprivileged user `jovyan` (`uid=1000`, configurable, [see options in the common features section](./common.md) of this documentation) in group `users` (`gid=100`)
   with ownership over the `/home/jovyan` and `/opt/conda` paths
-- `tini` as the container entry point
-- A `start.sh` script as the default command - useful for running alternative commands in the container as applications are added (e.g. `ipython`, `jupyter kernelgateway`, `jupyter lab`)
+- `tini` and a `start.sh` script as the container entry point - useful for running alternative commands in the container as applications are added (e.g. `ipython`, `jupyter kernelgateway`, `jupyter lab`)
 - A `run-hooks.sh` script, which can source/run files in a given directory
 - Options for a passwordless sudo
 - Common system libraries like `bzip2`, `ca-certificates`, `locales`
@@ -264,7 +263,7 @@ Whenever a docker image is pushed to the container registry, it is tagged with:
 ```{warning}
 - Tags before `2022-07-05` were sometimes incorrect.
   Please, do not rely on them.
-- Single-platform images have either `aarch64` or `x86_64` tag prefixes, for example, `jupyter/base-notebook:aarch64-python-3.10.5`
+- Single-platform images have either `aarch64-` or `x86_64-` tag prefixes, for example, `quay.io/jupyter/base-notebook:aarch64-python-3.11.6`
 ```
 
 For stability and reproducibility, you should either reference a date formatted
