@@ -80,7 +80,7 @@ RUN --mount=type=cache,target=/var/lib/apt/lists \
     latexmk biber
 
 # https://discourse.jupyter.org/t/how-to-configure-jupyterhub-to-run-code-server/11578/9
-ENV CODE_VERSION2=4.19.0
+ENV CODE_VERSION2=4.19.1
 RUN curl -fOL https://github.com/coder/code-server/releases/download/v${CODE_VERSION2}/code-server_${CODE_VERSION2}_amd64.deb \
     && dpkg -i code-server_${CODE_VERSION2}_amd64.deb \
     && rm -f code-server_${CODE_VERSION2}_amd64.deb
