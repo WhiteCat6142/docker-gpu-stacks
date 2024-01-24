@@ -9,6 +9,6 @@ LABEL maintainer="WhiteCat6142 <whitecat6142+git@gmail.com>"
 USER ${NB_UID}
 
 RUN --mount=type=cache,mode=0755,target=/home/${NB_UID}/.cache/pip \
-    pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 && \
+    pip3 install torch torchvision torchaudio && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
