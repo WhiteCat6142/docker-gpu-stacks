@@ -66,6 +66,7 @@ RUN mamba install --yes \
     'tensorflow' \
     'keras' \
     'cupy' \
+    'nvcc4jupyter' \
     'jupyter-server-proxy' \
     'jupyter-vscode-proxy' && \
     mamba clean --all -f -y && \
