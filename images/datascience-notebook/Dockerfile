@@ -24,8 +24,8 @@ RUN --mount=type=cache,target=/var/lib/apt/lists \
 # https://kubernetes.io/ja/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 RUN --mount=type=cache,target=/var/lib/apt/lists \
     --mount=type=cache,target=/var/cache/apt \
-    curl -sL https://dl.k8s.io/apt/doc/apt-key.gpg | apt-key add - && \
-    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >> /etc/apt/sources.list.d/kubernetes.list && \
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | apt-key add - && \
+    echo "deb https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" >> /etc/apt/sources.list.d/kubernetes.list && \
     apt-get update && apt-get install -y kubectl && \
     curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 # Julia dependencies
