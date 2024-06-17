@@ -10,7 +10,7 @@ USER root
 RUN --mount=type=cache,target=/var/lib/apt/lists \
     --mount=type=cache,target=/var/cache/apt \
     apt update -y && \
-    apt install  -y ninja-build cmake
+    apt install -y ninja-build cmake
 
 USER ${NB_UID}
 ENV _GLIBCXX_USE_CXX11_ABI 1
@@ -19,12 +19,11 @@ ENV CXXFLAGS '-Wno-maybe-uninitialized -Wno-uninitialized -Wno-free-nonheap-obje
 # ENV CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"/opt/conda/"}
 
 RUN --mount=type=cache,mode=0755,target=/home/${NB_UID}/.cache/pip \
-    git clone --depth 1 https://github.com/pytorch/pytorch.git && \
-    cd pytorch && \
-    pip install -r requirements.txt && \
-    git submodule sync && \
-    git submodule update --init --recursive && \
-    python setup.py develop && \
+    curl -O https://github.com/pytorch/pytorch/releases/download/v2.3.1/pytorch-v2.3.1.tar.gz && \
+    tar -zxvf pytorch-v2.3.1.tar.gz && \
+    cd pytorch-v2.3.1 && \
+    pip3 install -r requirements.txt && \
+    python3 setup.py develop && \
     pip install nvcc4jupyter && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
