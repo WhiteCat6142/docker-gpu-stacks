@@ -10,11 +10,12 @@ USER root
 RUN --mount=type=cache,target=/var/lib/apt/lists \
     --mount=type=cache,target=/var/cache/apt \
     apt update -y && \
-    apt install -y ninja-build cmake gcc-12 g++-12
+    apt install -y ninja-build cmake gcc-11 g++-11
 
 USER ${NB_UID}
-ENV CC gcc-12
-ENV CXX g++-12
+ENV _GLIBCXX_USE_CXX11_ABI 1
+ENV CC gcc-11
+ENV CXX g++-11
 ENV CUDA_DIR /usr/local/cuda-12
 ENV CXXFLAGS '-Wno-maybe-uninitialized -Wno-uninitialized -Wno-free-nonheap-object -Wno-nonnull' CFLAGS='-Wno-maybe-uninitialized -Wno-uninitialized -Wno-free-nonheap-object -Wno-nonnull' USE_ROCM=0 TORCH_CUDA_ARCH_LIST=8.9 PATH="$CUDA_DIR/bin:$PATH" LD_LIBRARY_PATH=$CUDA_DIR/lib64 python setup.py develop
 # ENV CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"/opt/conda/"}
