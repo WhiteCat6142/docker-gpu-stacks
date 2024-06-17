@@ -7,7 +7,11 @@ FROM $BASE_CONTAINER
 LABEL maintainer="WhiteCat6142 <whitecat6142+git@gmail.com>"
 
 USER root
-RUN apt install ninja cmake -y
+RUN --mount=type=cache,target=/var/lib/apt/lists \
+    --mount=type=cache,target=/var/cache/apt \
+    rm /etc/apt/apt.conf.d/docker-clean && \
+    apt update -y && \
+    apt install  -y ninja cmake
 
 USER ${NB_UID}
 ENV _GLIBCXX_USE_CXX11_ABI 1
