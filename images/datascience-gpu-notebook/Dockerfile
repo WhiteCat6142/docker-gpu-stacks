@@ -6,7 +6,9 @@ FROM $BASE_CONTAINER
 
 LABEL maintainer="WhiteCat6142 <whitecat6142+git@gmail.com>"
 
+USER root
 RUN apt install ninja cmake -y
+
 USER ${NB_UID}
 ENV _GLIBCXX_USE_CXX11_ABI 1
 ENV CUDA_DIR /usr/local/cuda-12
