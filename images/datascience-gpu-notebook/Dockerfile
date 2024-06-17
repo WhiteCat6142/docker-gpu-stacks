@@ -19,7 +19,7 @@ ENV CXXFLAGS '-Wno-maybe-uninitialized -Wno-uninitialized -Wno-free-nonheap-obje
 # ENV CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"/opt/conda/"}
 
 RUN --mount=type=cache,mode=0755,target=/home/${NB_UID}/.cache/pip \
-    curl -O https://github.com/pytorch/pytorch/releases/download/v2.3.1/pytorch-v2.3.1.tar.gz && \
+    curl -OL https://github.com/pytorch/pytorch/releases/download/v2.3.1/pytorch-v2.3.1.tar.gz && \
     tar -zxvf pytorch-v2.3.1.tar.gz && \
     cd pytorch-v2.3.1 && \
     pip3 install -r requirements.txt && \
