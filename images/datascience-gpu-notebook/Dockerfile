@@ -10,7 +10,7 @@ USER root
 RUN --mount=type=cache,target=/var/lib/apt/lists \
     --mount=type=cache,target=/var/cache/apt \
     apt update -y && \
-    apt install -y ninja-build cmake
+    apt install -y ninja-build cmake gcc-11 g++-11
 
 USER ${NB_UID}
 ENV _GLIBCXX_USE_CXX11_ABI 1
