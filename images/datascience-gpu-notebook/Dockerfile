@@ -9,7 +9,6 @@ LABEL maintainer="WhiteCat6142 <whitecat6142+git@gmail.com>"
 USER root
 RUN --mount=type=cache,target=/var/lib/apt/lists \
     --mount=type=cache,target=/var/cache/apt \
-    rm /etc/apt/apt.conf.d/docker-clean && \
     apt update -y && \
     apt install  -y ninja cmake
 
